@@ -92,8 +92,8 @@ function compareObjects(obj1, obj2) {
  *    isEmptyObject({}) => true
  *    isEmptyObject({a: 1}) => false
  */
-function isEmptyObject(/* obj */) {
-  throw new Error('Not implemented');
+function isEmptyObject(obj) {
+  return Object.keys(obj).length === 0;
 }
 
 /**
@@ -112,8 +112,8 @@ function isEmptyObject(/* obj */) {
  *    immutableObj.newProp = 'new';
  *    console.log(immutableObj) => {a: 1, b: 2}
  */
-function makeImmutable(/* obj */) {
-  throw new Error('Not implemented');
+function makeImmutable(obj) {
+  return Object.freeze(obj);
 }
 
 /**
@@ -126,8 +126,15 @@ function makeImmutable(/* obj */) {
  *    makeWord({ a: [0, 1], b: [2, 3], c: [4, 5] }) => 'aabbcc'
  *    makeWord({ H:[0], e: [1], l: [2, 3, 8], o: [4, 6], W:[5], r:[7], d:[9]}) => 'HelloWorld'
  */
-function makeWord(/* lettersObject */) {
-  throw new Error('Not implemented');
+function makeWord(lettersObject) {
+  return Object.entries(lettersObject)
+    .reduce((acc, [key, value]) => {
+      value.forEach((elem) => {
+        acc[elem] = key;
+      });
+      return acc;
+    }, [])
+    .join('');
 }
 
 /**
@@ -144,8 +151,25 @@ function makeWord(/* lettersObject */) {
  *    sellTickets([25, 25, 50]) => true
  *    sellTickets([25, 100]) => false (The seller does not have enough money to give change.)
  */
-function sellTickets(/* queue */) {
-  throw new Error('Not implemented');
+function sellTickets(queue) {
+  const ticketPrice = 25;
+  let change = 0;
+  let canSell = true;
+
+  queue.forEach((elem) => {
+    if (
+      elem < ticketPrice ||
+      (elem > ticketPrice && elem > change + ticketPrice)
+    ) {
+      canSell = false;
+    } else if (elem === ticketPrice) {
+      change += ticketPrice;
+    } else {
+      const diff = elem - ticketPrice;
+      change = change + elem - diff;
+    }
+  });
+  return canSell;
 }
 
 /**
@@ -226,8 +250,14 @@ function fromJSON(proto, json) {
  *      { country: 'Russia',  city: 'Saint Petersburg' }
  *    ]
  */
-function sortCitiesArray(/* arr */) {
-  throw new Error('Not implemented');
+function sortCitiesArray(arr) {
+  return arr.sort((a, b) => {
+    if (a.country === b.country) {
+      if (a.city === b.city) return 0;
+      return a.city > b.city ? 1 : -1;
+    }
+    return a.country > b.country ? 1 : -1;
+  });
 }
 
 /**
@@ -260,8 +290,18 @@ function sortCitiesArray(/* arr */) {
  *    "Poland" => ["Lodz"]
  *   }
  */
-function group(/* array, keySelector, valueSelector */) {
-  throw new Error('Not implemented');
+function group(array, keySelector, valueSelector) {
+  return array.reduce((acc, curr) => {
+    if (!acc.has(keySelector(curr))) {
+      acc.set(keySelector(curr), [valueSelector(curr)]);
+    } else {
+      acc.set(keySelector(curr), [
+        ...acc.get(keySelector(curr)),
+        valueSelector(curr),
+      ]);
+    }
+    return acc;
+  }, new Map());
 }
 
 /**
